@@ -1,7 +1,10 @@
 # Tasks — Course Registration App
 
-Implementation plan derived from [`PRD.md`](./PRD.md), with technical decisions resolved in
-[`architecture.md`](./architecture.md).
+Implementation plan derived from [`PRD.md`](../PRD.md), with technical decisions resolved in
+[`architecture.md`](../architecture.md).
+
+Setup guides in this folder: [`supabase-setup.md`](./supabase-setup.md) ·
+[`backend-setup.md`](./backend-setup.md) · [`frontend-setup.md`](./frontend-setup.md).
 
 **Scope.** Student register/drop only. Teacher/admin CRUD, roles, and course authorship are **not** in
 this plan (see [Out of Scope](#out-of-scope)).
@@ -46,19 +49,19 @@ parallel with Phases 2–4. Phases 2–4 are strictly sequential.
 **Files:** `.gitignore` (new)
 **Depends on:** —
 **Acceptance criteria:**
-- [ ] Excludes Python (`__pycache__/`, `*.py[cod]`, `.venv/`, `.pytest_cache/`), Node (`node_modules/`, `dist/`), and editor dirs (`.vscode/`, `.idea/`)
-- [ ] Excludes `.env` and `*.env` **except** `*.env.example`
-- [ ] Does **not** exclude `uv.lock` — the lockfile is committed (ADR-6). Verify it is absent from the ignore list
-- [ ] `git status --porcelain` shows no ignored file from a scratch `touch backend/.env`
+- [x] Excludes Python (`__pycache__/`, `*.py[cod]`, `.venv/`, `.pytest_cache/`), Node (`node_modules/`, `dist/`), and editor dirs (`.vscode/`, `.idea/`)
+- [x] Excludes `.env` and `*.env` **except** `*.env.example`
+- [x] Does **not** exclude `uv.lock` — the lockfile is committed (ADR-6). Verify it is absent from the ignore list
+- [x] `git status --porcelain` shows no ignored file from a scratch `touch backend/.env`
 
 ### T0.2 — Commit example environment files
 **Files:** `backend/.env.example` (new), `frontend/.env.example` (new)
 **Depends on:** T0.1
 **Acceptance criteria:**
-- [ ] Backend example lists `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_JWKS_URL`, `SUPABASE_JWT_AUDIENCE`, `SUPABASE_JWT_SECRET` (commented as legacy-only), `CORS_ORIGINS` — matching architecture.md §7.1
-- [ ] Frontend example lists `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_API_BASE_URL`
-- [ ] Every value is an obvious placeholder, with no real project ref or key anywhere
-- [ ] Neither example file contains a variable with a secret value
+- [x] Backend example lists `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_JWKS_URL`, `SUPABASE_JWT_AUDIENCE`, `SUPABASE_JWT_SECRET` (commented as legacy-only), `CORS_ORIGINS` — matching architecture.md §7.1
+- [x] Frontend example lists `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_API_BASE_URL`
+- [x] Every value is an obvious placeholder, with no real project ref or key anywhere
+- [x] Neither example file contains a variable with a secret value
 
 ### T0.3 — Declare backend dependencies and prove them on Python 3.14 — **RISK GATE**
 **Files:** `backend/pyproject.toml`, `backend/uv.lock` (new)
@@ -555,7 +558,7 @@ They are the primary evidence for the PRD §7 Definition of Done.
 - [ ] A reader can go from a clean clone to a working local app by following it top to bottom, with no undocumented steps
 
 ### T8.4 — Documentation and decision sync
-**Files:** `architecture.md`, `tasks.md`, `PRD.md`
+**Files:** `architecture.md`, `docs/todos.md`, `PRD.md`
 **Depends on:** all phases
 **Acceptance criteria:**
 - [ ] Every ADR in `architecture.md` §8 reflects what was actually built, including any deviation forced by T1.2 (JWT algorithm) or T0.3 (interpreter/wheels)
@@ -608,11 +611,3 @@ the full list and rationale):
 
 Recording these as out of scope is the point: it keeps the two documents honest about what the diagrams
 and task list do and do not cover.
-
-
-
-
-
-
-
-

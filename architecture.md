@@ -1,6 +1,6 @@
 # Architecture — Course Registration App
 
-> Companion documents: [`PRD.md`](./PRD.md) (requirements), [`tasks.md`](./tasks.md) (implementation plan).
+> Companion documents: [`PRD.md`](./PRD.md) (requirements), [`docs/todos.md`](./docs/todos.md) (implementation plan).
 > Scope is **strictly** the student registration flow defined in PRD §3–§6. Teacher-facing CRUD,
 > role-based access control, and course/class authoring are **explicitly out of scope** (see §9).
 
@@ -358,7 +358,7 @@ flowchart TB
 
 The layering rule is one-directional: **routers → services → models/db**. Routers never import
 `models` for querying and services never import `fastapi.Request`. This keeps the capacity rule testable
-without an HTTP client, which `tasks.md` Phase 8 depends on.
+without an HTTP client, which `docs/todos.md` Phase 8 depends on.
 
 ---
 ## 5. Frontend Skeleton
