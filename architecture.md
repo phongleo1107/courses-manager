@@ -483,6 +483,8 @@ Two rules that are easy to get wrong:
    the whole point of the architecture in PRD §1.
 
 `.env` files are gitignored; `.env.example` files are committed with placeholder values (task T0.2).
+Step-by-step instructions for filling them in live in [`docs/supabase-setup.md`](./docs/supabase-setup.md),
+[`docs/backend-setup.md`](./docs/backend-setup.md) and [`docs/frontend-setup.md`](./docs/frontend-setup.md).
 
 ### 7.2 CORS
 
