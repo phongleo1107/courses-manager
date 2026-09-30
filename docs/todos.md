@@ -77,10 +77,10 @@ parallel with Phases 2–4. Phases 2–4 are strictly sequential.
 **Files:** `frontend/` (new tree)
 **Depends on:** T0.1
 **Acceptance criteria:**
-- [ ] Vite React + TypeScript project created in `frontend/` (not a subdirectory)
-- [ ] `npm run dev` serves the app; `npm run build` succeeds with no TypeScript errors
-- [ ] `@supabase/supabase-js` is a dependency; `package.json` scripts are `dev`, `build`, `preview`, `lint`
-- [ ] `node_modules/` and `dist/` are gitignored (T0.1)
+- [x] Vite React + TypeScript project created in `frontend/` (not a subdirectory)
+- [x] `npm run dev` serves the app; `npm run build` succeeds with no TypeScript errors
+- [x] `@supabase/supabase-js` is a dependency; `package.json` scripts are `dev`, `build`, `preview`, `lint`
+- [x] `node_modules/` and `dist/` are gitignored (T0.1)
 
 ### T0.5 — Decide and document the dependency source of truth
 **Files:** `architecture.md` (ADR-6 already records this), root `requirements.txt`

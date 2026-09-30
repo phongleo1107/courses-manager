@@ -75,14 +75,14 @@ cd backend
 cp .env.example .env
 ```
 
-| Variable | Where the value comes from |
-| :--- | :--- |
-| `DATABASE_URL` | [`supabase-setup.md`](./supabase-setup.md) Step 2 value 3. Must be `postgresql+psycopg://…` |
-| `SUPABASE_URL` | Step 2 value 1 — bare project URL, no trailing `/auth/v1` |
-| `SUPABASE_JWKS_URL` | Optional; defaults to `<SUPABASE_URL>/auth/v1/.well-known/jwks.json` |
-| `SUPABASE_JWT_AUDIENCE` | `authenticated` — use the `aud` observed in Step 3b |
-| `SUPABASE_JWT_SECRET` | Leave **commented out** unless Step 3c found `alg: HS256` |
-| `CORS_ORIGINS` | `http://localhost:5173` — must match the frontend origin exactly |
+| Variable                | Where the value comes from                                                                  |
+| :------------------------| :--------------------------------------------------------------------------------------------|
+| `DATABASE_URL`          | [`supabase-setup.md`](./supabase-setup.md) Step 2 value 3. Must be `postgresql+psycopg://…` |
+| `SUPABASE_URL`          | Step 2 value 1 — bare project URL, no trailing `/auth/v1`                                   |
+| `SUPABASE_JWKS_URL`     | Optional; defaults to `<SUPABASE_URL>/auth/v1/.well-known/jwks.json`                        |
+| `SUPABASE_JWT_AUDIENCE` | `authenticated` — use the `aud` observed in Step 3b                                         |
+| `SUPABASE_JWT_SECRET`   | Leave **commented out** unless Step 3c found `alg: HS256`                                   |
+| `CORS_ORIGINS`          | `http://localhost:5173` — must match the frontend origin exactly                            |
 
 `.env` is gitignored (`.gitignore` lines 1–4). Verify:
 
