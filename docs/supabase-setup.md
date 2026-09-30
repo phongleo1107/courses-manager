@@ -1,13 +1,13 @@
 # Supabase Setup
 
-How to stand up the Supabase project (Auth + Postgres) for this app and produce the credentials that
-both `.env` files need.
+How to configure the Supabase project for the planned Auth and PostgreSQL integration.
 
 Covers **Phase 1** in [`todos.md`](./todos.md): tasks **T1.1**, **T1.2**, **T1.3**.
 Related: [`backend-setup.md`](./backend-setup.md) (runs migrations), [`frontend-setup.md`](./frontend-setup.md).
 
-> Do the steps in order. Step 3 is a **RISK GATE** — if it reveals the project uses legacy HS256 keys,
-> the backend's token verification changes and you must decide before writing `core/security.py`.
+> **Current state.** The application does not yet connect to Supabase. This guide prepares the project
+> and local environment for the planned integration. Check the signing-key algorithm in Step 3 before
+> implementing backend token verification, since legacy HS256 keys require a different verification path.
 
 ## Prerequisites
 
@@ -22,8 +22,8 @@ Related: [`backend-setup.md`](./backend-setup.md) (runs migrations), [`frontend-
 2. **Choose the region closest to where the FastAPI backend will run.** This matters: ADR-3 in
    [`../architecture.md`](../architecture.md) rules out per-request Auth-server round-trips partly
    because of cross-region latency, and the same reasoning applies to database round-trips from the API.
-3. Set a **database password** and save it in your password manager. It goes into `DATABASE_URL` and is
-   shown only once.
+3. Set a database password and store it securely. It is required for the connection string and may need
+  to be reset if you do not have it available later.
 4. Wait for provisioning to finish.
 
 **Write down the project ref** — the `<project-ref>` slug in the dashboard URL
@@ -50,8 +50,8 @@ The dashboard gives you several variants. Use the **Session pooler** string, the
    ```
    postgresql+psycopg://
    ```
-   Pasting the raw string without this change is the single most common setup failure — SQLAlchemy
-   raises `NoSuchModuleError: Can't load plugin: sqlalchemy.dialects:postgresql`.
+  Without the driver prefix, SQLAlchemy cannot load the PostgreSQL dialect and raises
+  `NoSuchModuleError: Can't load plugin: sqlalchemy.dialects:postgresql`.
 
 2. **Substitute the real password** for the `[YOUR-PASSWORD]` placeholder.
 
@@ -60,12 +60,12 @@ Resulting shape:
 DATABASE_URL=postgresql+psycopg://postgres.<project-ref>:<db-password>@aws-0-<region>.pooler.supabase.com:5432/postgres
 ```
 
-> **Avoid the transaction pooler** (port `6543`) for this project. It does not support all the session
-> features Alembic and `SELECT ... FOR UPDATE` rely on. The session pooler on port `5432` behaves like a
-> normal Postgres connection and is the calmer choice for local development.
+> The session pooler is a suitable default for local migrations and development. The transaction pooler
+> can run transaction-scoped locks such as `SELECT ... FOR UPDATE`, but does not provide persistent
+> session state; use it only when the application and migration tooling do not depend on that state.
 
 ---
-## Step 3 — Determine the JWT signing key type — **RISK GATE**
+## Step 3 — Determine the JWT signing key type
 
 The backend verifies tokens **offline** using the project's public keys (ADR-3). Whether that is possible
 depends on which signing-key system your project uses, so establish this now.
@@ -116,7 +116,7 @@ Put the observed `iss` into `SUPABASE_URL` (without the trailing `/auth/v1`) and
 `SUPABASE_JWT_AUDIENCE`. Do **not** guess these — a wrong `aud` makes every authenticated request return
 `401` with no obvious cause.
 
-### 3c. Only if `alg` is `HS256`
+### 3c. If `alg` is `HS256`
 
 Uncomment `SUPABASE_JWT_SECRET` in `backend/.env`, copy the value from **Project Settings → API → JWT
 Settings → JWT Secret**, and record the deviation in [`../architecture.md`](../architecture.md) §8 ADR-3.
@@ -199,7 +199,7 @@ committing.
 
 ---
 
-## Step 6 — Apply the database schema
+## Step 6 — Apply the database schema [pending backend implementation]
 
 The three application tables (`courses`, `classes`, `registrations`) are created by Alembic migrations
 that live in the backend, not by clicking in the dashboard. Once `backend/.env` is filled in, follow

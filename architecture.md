@@ -285,11 +285,12 @@ more correct by construction and is recorded as ADR-4's alternative, but the PRD
 `registered` column, so this design honours it while making it safe.
 
 ---
-## 4. Backend Skeleton
+## 4. Backend Target Structure
 
-The backend lives in a **uv src-layout** package at `backend/src/backend/` (Python 3.14, per
-`backend/.python-version`). The existing `pyproject.toml` declares no dependencies yet, and
-`__init__.py` currently exposes a placeholder `main()`.
+The backend package uses a uv src-layout at `backend/src/backend/` and targets Python 3.14. The current
+package contains only a placeholder `__init__.py`; `main.py`, the database layer, API, migrations, and
+services described here have not been implemented. `backend/pyproject.toml` declares part of the target
+dependency set; the setup guide tracks the remaining packages.
 
 ### 4.1 Layer responsibilities
 
@@ -361,11 +362,12 @@ The layering rule is one-directional: **routers → services → models/db**. Ro
 without an HTTP client, which `docs/todos.md` Phase 8 depends on.
 
 ---
-## 5. Frontend Skeleton
+## 5. Frontend Target Structure
 
-The `frontend/` directory is currently empty. The component tree below is a direct rendering of
-PRD §5 (`App → Navbar / ClassList / MyRegistrations`), with the Supabase session hoisted into a context
-so that both data components can react to login/logout without prop-drilling the token.
+The current `frontend/` directory is the default Vite + React + TypeScript starter. The component tree
+below is the proposed implementation of PRD §5 (`App → Navbar / ClassList / MyRegistrations`). It is not
+present in the source yet. The design places Supabase session state in a context so the data components
+can react to login and logout without passing the token through each component.
 
 ```mermaid
 flowchart TB
@@ -581,18 +583,16 @@ then need an aggregate join on every `GET /classes`.
 **Rationale.** The workload is a handful of short queries per request; there is no external I/O to
 overlap with, so async adds `AsyncSession`, an async driver and async-aware dependency plumbing for no
 throughput gain. Sync code is also easier to debug for the learning goal in PRD §1.
-**Alternative.** `AsyncSession` + `asyncpg` — worthwhile if the app later calls slow external APIs
-concurrently. `psycopg` v3 is preferred over `asyncpg` here partly because wheel availability for the
-very new Python 3.14 interpreter is a real risk (see §9).
+**Alternative.** `AsyncSession` + `asyncpg` may be appropriate if the app later needs concurrent
+external I/O. Verify Python 3.14 package support as part of the dependency check in §9.
 
 ### ADR-6 — `backend/pyproject.toml` (uv) is the single dependency source
 
-**Context.** The repo has both an empty root `requirements.txt` and a uv-managed
-`backend/pyproject.toml`.
+**Context.** The backend uses a uv-managed `backend/pyproject.toml` and committed `backend/uv.lock`.
 **Decision.** Add all backend dependencies to `backend/pyproject.toml` and manage them with `uv`.
-**Rationale.** `pyproject.toml` already exists with a `uv_build` build backend and a pinned
-`.python-version`, and `uv.lock` gives reproducible installs. The root `requirements.txt` is left in
-place (untouched, to avoid breaking anything referencing it) and documented as vestigial.
+**Rationale.** `pyproject.toml` uses the `uv_build` build backend and the Python version is pinned in
+`.python-version`; `uv.lock` supports reproducible installs. There is no root `requirements.txt` in the
+current repository.
 **Alternative.** Consolidate on `requirements.txt` — would discard the lockfile and the build backend
 that is already configured.
 
@@ -614,15 +614,14 @@ are deliberately *not* specified and must not be inferred from the diagrams:
 | Email confirmation on register | Supabase Auth handles all email; the app sends none |
 | Payments for `classes.tuition` | `tuition` is a display value with no checkout |
 
-**Note on `README.md`.** It currently describes "teachers create and manage course registration", which
-contradicts the PRD's student-facing flow. This document follows the PRD; the README line is left
-unchanged and should be reconciled separately so the repo has a single story.
+The repository README and this scope section should describe the same student-facing release. The
+current README identifies teacher and admin tools as out of scope.
 
 ### 9.2 Risks
 
 | Risk | Impact | Mitigation |
 | :--- | :--- | :--- |
-| **Python 3.14 wheel availability** for `psycopg` / `cryptography` / `pydantic-core` | Cannot install or import the DB driver | Pin via `uv` and verify with a smoke import in task T0.3 *before* writing feature code. Fallback: lower `requires-python` / `.python-version` to a version with published wheels |
+| **Python 3.14 package compatibility** for database and crypto dependencies | Installation or runtime imports may fail | Verify dependency installation and imports in task T0.3 before building backend features. If a required package is unavailable, select a supported interpreter and update `requires-python` and `.python-version` together |
 | **Supabase project uses legacy HS256 keys** | JWKS verification finds no key and every request 401s | Detect the `alg` in the project's tokens during T1.2; if `HS256`, switch to ADR-3's alternative (a) or (b) |
 | **`registered` counter drift** from a manual DB edit or a missed decrement | Catalog shows wrong availability; a class can appear full when it is not | `CHECK` constraint blocks impossible states; T8.1 adds a test asserting counter == `COUNT(*)` after a register/drop cycle |
 | **RLS disabled (ADR-2)** | The database is not independently protected | Keep the Supabase anon key off any direct table access (ADR-2 consequences); never expose `DATABASE_URL` |

@@ -9,13 +9,17 @@ Setup guides in this folder: [`supabase-setup.md`](./supabase-setup.md) ·
 **Scope.** Student register/drop only. Teacher/admin CRUD, roles, and course authorship are **not** in
 this plan (see [Out of Scope](#out-of-scope)).
 
+**Implementation status.** The frontend scaffold and its build are in place. The backend application,
+Supabase connection, registration UI, and API remain planned. Backend dependencies are only partly
+declared, and the Python 3.14 install/import checks still need to be run.
+
 ## How to use this file
 
 * Tasks are grouped into phases; phase order is the dependency order.
 * Each task has a stable ID, the **files** it touches, its **depends on** set, and **acceptance
   criteria** that are objectively checkable. A task is done only when every criterion holds.
-* Tasks marked **RISK GATE** must pass before dependent work starts, because they can invalidate the
-  technology choice rather than just fail a test.
+* Dependency and configuration checks must pass before dependent work starts when they could require a
+  change to the selected tools or implementation.
 * Every PRD §7 "Definition of Done" bullet maps to at least one task — see the
   [traceability table](#definition-of-done-traceability).
 
@@ -38,8 +42,8 @@ flowchart LR
     style P7 fill:#e6f4ea
 ```
 
-The two lanes matter: Phase 5 (frontend scaffold, auth UI) only needs Phase 1, so it can proceed in
-parallel with Phases 2–4. Phases 2–4 are strictly sequential.
+Phase 5 (frontend scaffold and auth UI) depends only on Phase 1 and can proceed in parallel with
+Phases 2–4. Phases 2–4 depend on one another in order.
 
 ---
 
@@ -63,14 +67,14 @@ parallel with Phases 2–4. Phases 2–4 are strictly sequential.
 - [x] Every value is an obvious placeholder, with no real project ref or key anywhere
 - [x] Neither example file contains a variable with a secret value
 
-### T0.3 — Declare backend dependencies and prove them on Python 3.14 — **RISK GATE**
+### T0.3 — Declare backend dependencies and verify Python 3.14 support
 **Files:** `backend/pyproject.toml`, `backend/uv.lock` (new)
 **Depends on:** —
 **Acceptance criteria:**
-- [x] `backend/pyproject.toml` `dependencies` gains: `fastapi`, `uvicorn[standard]`, `sqlalchemy`, `pydantic-settings`, `psycopg[binary]`, `pyjwt[crypto]`, `alembic`; dev group gains `pytest`, `pytest-cov`, `httpx`, `ruff`
-- [x] `uv sync` completes against Python 3.14 with wheels for `psycopg`, `cryptography` and `pydantic-core` — no source build from a missing wheel
-- [x] `uv run python -c "import fastapi, sqlalchemy, psycopg, jwt, cryptography, alembic"` exits `0`
-- [x] If any import fails: stop and resolve the interpreter version here, before any feature code exists. Record the outcome in `architecture.md` §9.2
+- [ ] `backend/pyproject.toml` `dependencies` gains: `fastapi`, `uvicorn[standard]`, `sqlalchemy`, `pydantic-settings`, `psycopg[binary]`, `pyjwt[crypto]`, `alembic`; dev group gains `pytest`, `pytest-cov`, `httpx`, `ruff`
+- [ ] `uv sync` completes against Python 3.14 with compatible wheels for `psycopg`, `cryptography` and `pydantic-core`
+- [ ] `uv run python -c "import fastapi, sqlalchemy, psycopg, jwt, cryptography, alembic"` exits `0`
+- [ ] If an import fails, resolve the interpreter version before feature work and record the outcome in `architecture.md` §9.2
 - [x] `uv.lock` is generated and committed
 
 ### T0.4 — Scaffold the React frontend
@@ -83,12 +87,12 @@ parallel with Phases 2–4. Phases 2–4 are strictly sequential.
 - [x] `node_modules/` and `dist/` are gitignored (T0.1)
 
 ### T0.5 — Decide and document the dependency source of truth
-**Files:** `architecture.md` (ADR-6 already records this), root `requirements.txt`
+**Files:** `architecture.md`
 **Depends on:** T0.3
 **Acceptance criteria:**
 - [ ] ADR-6 in `architecture.md` matches what was actually done in T0.3
-- [ ] The empty root `requirements.txt` is either deleted or left with a one-line comment pointing at `backend/pyproject.toml`
-- [ ] No file tells a new contributor to `pip install -r requirements.txt`
+- [x] There is no root `requirements.txt`; backend dependencies are managed in `backend/pyproject.toml`
+- [x] No setup guide instructs contributors to install from a root `requirements.txt`
 
 ---
 ## Phase 1 — Supabase project and database schema
@@ -101,7 +105,7 @@ parallel with Phases 2–4. Phases 2–4 are strictly sequential.
 - [ ] Project ref, project URL, anon key and database connection string recorded somewhere private (not the repo)
 - [ ] `frontend/.env` and `backend/.env` created locally from the `.env.example` files
 
-### T1.2 — Determine the project's JWT signing key type — **RISK GATE**
+### T1.2 — Determine the project's JWT signing key type
 **Files:** `backend/.env`
 **Depends on:** T1.1
 **Acceptance criteria:**

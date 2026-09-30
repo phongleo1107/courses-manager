@@ -1,16 +1,18 @@
-# PRD — Course Registration App (with Supabase Auth)
+# Product Requirements — Course Registration
+
+This document defines the intended first release. The repository currently contains a Vite starter and
+a backend package scaffold; the product flows below are not implemented yet.
 
 ## 1. Objective
 
-Build a focused full-stack course registration web application to learn and practice:
+Build a course registration application with this data path:
 
 **React.js (Supabase Client) → FastAPI → SQLAlchemy → PostgreSQL (Supabase)**
 
-### Core Goal
-Understand end-to-end data flow with managed authentication:
+The application should use Supabase Auth for identity and FastAPI for data access:
 1. User logs in via Supabase Auth on the frontend.
-2. React sends requests to FastAPI containing the Supabase JWT token.
-3. FastAPI verifies the user and executes CRUD operations on PostgreSQL via SQLAlchemy.
+2. The React app sends the Supabase access token to FastAPI with each protected request.
+3. FastAPI verifies the token and accesses PostgreSQL through SQLAlchemy.
 
 ```text
 React (Supabase Client)
@@ -85,7 +87,8 @@ courses
 
 ## 4. API Endpoints (FastAPI)
 
-FastAPI verifies the Supabase Bearer Token via a dependency injection layer on protected routes.
+FastAPI verifies the Supabase bearer token on protected routes. The implementation should validate the
+signature, issuer, audience, and expiry using the project's configured signing keys.
 
 | Method | Endpoint | Auth Required? | Description |
 | :--- | :--- | :--- | :--- |
@@ -96,7 +99,7 @@ FastAPI verifies the Supabase Bearer Token via a dependency injection layer on p
 
 ### Backend Auth Middleware / Dependency Flow
 1. React includes `Authorization: Bearer <supabase_access_token>` in HTTP headers.
-2. FastAPI dependency (`get_current_user`) extracts the token and verifies it against your Supabase JWT secret.
+2. FastAPI dependency (`get_current_user`) extracts and verifies the token using the project's signing key configuration.
 3. FastAPI extracts `user_id` (sub) from the token payload and uses it for database operations.
 
 ---

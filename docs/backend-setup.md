@@ -1,15 +1,15 @@
 # Backend Setup (FastAPI)
 
-How to install, configure, migrate, seed and run the FastAPI backend.
+Backend setup and the intended development workflow.
 
 Covers **Phase 0** (**T0.3**, **T0.5**), **Phases 2–4**, and the backend test tasks **T8.1–T8.2** in
 [`todos.md`](./todos.md).
 Related: [`supabase-setup.md`](./supabase-setup.md) (do this first), [`frontend-setup.md`](./frontend-setup.md).
 
-> **Status.** The backend package is currently a scaffold: `backend/src/backend/__init__.py` is a
-> placeholder and `backend/pyproject.toml` declares **no dependencies**. Steps marked
-> **[not yet implemented]** will fail until the matching task in `todos.md` is done. They are included
-> here so the guide is the complete target workflow.
+> **Current state.** `backend/src/backend/__init__.py` is still a placeholder. The project declares
+> FastAPI, SQLAlchemy, psycopg, PyJWT, Alembic, and development tools, but does not yet declare
+> `uvicorn` or `pydantic-settings`. There is no application module, migration environment, or seed
+> script, so the run, migration, and seed steps below are target workflow until those pieces are added.
 
 ## Prerequisites
 
@@ -27,12 +27,13 @@ cd backend
 uv sync
 ```
 
-`backend/pyproject.toml` is the single source of truth for dependencies (ADR-6). The root
-`requirements.txt` was deliberately removed — do not `pip install -r` anything.
+`backend/pyproject.toml` is the source of truth for backend dependencies (ADR-6). The repository has no
+root `requirements.txt`.
 
-### Step 1a — Declare the dependencies **[not yet implemented — T0.3]**
+### Step 1a — Complete the dependencies [in progress — T0.3]
 
-`dependencies` is currently empty. Populate it:
+The current manifest is missing the ASGI server, settings package, and the binary/crypto extras. Add them
+to `backend/pyproject.toml`:
 
 ```bash
 uv add fastapi "uvicorn[standard]" sqlalchemy pydantic-settings \
@@ -48,9 +49,9 @@ Notes on the non-obvious picks:
   project uses synchronous SQLAlchemy (ADR-5).
 * Avoid bare `python-jose`; PyJWT is what ADR-3 specifies.
 
-### Step 1b — Prove the imports work — **RISK GATE (T0.3)**
+### Step 1b — Verify the imports (T0.3 prerequisite)
 
-Python 3.14 is very new, and wheels for `psycopg`, `cryptography` and `pydantic-core` may not exist yet.
+Python 3.14 is relatively new, so verify that compatible wheels are available for the selected packages.
 Confirm before writing any feature code:
 
 ```bash
@@ -58,7 +59,7 @@ uv run python -c "import fastapi, sqlalchemy, psycopg, jwt, cryptography, alembi
 ```
 
 * Prints `ok` → continue.
-* Tries to **build from source**, or errors → stop and lower the interpreter
+* Tries to build from source, or errors → stop and lower the interpreter
   (`backend/.python-version`) to a version with published wheels, then re-run `uv sync`. Record the
   outcome in [`../architecture.md`](../architecture.md) §9.2.
 
@@ -131,8 +132,8 @@ Useful commands:
 | `uv run alembic downgrade base` | Roll everything back — must work, per T1.5 |
 | `uv run alembic check` | Detect drift between the models and the migrations |
 
-`alembic check` is the fastest way to catch a model that was changed without a migration — a mismatch
-means the ORM and the database disagree, which produces confusing runtime errors later.
+`alembic check` reports model changes that do not have a corresponding migration. A mismatch means the
+ORM and database schemas differ.
 
 ---
 

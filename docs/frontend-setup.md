@@ -1,12 +1,14 @@
 # Frontend Setup (React + Vite)
 
-How to scaffold, configure and run the React frontend, including the Supabase Auth wiring.
+How to run the frontend scaffold and connect it to the planned Supabase Auth flow.
 
 Covers **Phase 0** (**T0.4**) and **Phases 5–6**, plus **T5.6** in [`todos.md`](./todos.md).
 Related: [`supabase-setup.md`](./supabase-setup.md) (do this first), [`backend-setup.md`](./backend-setup.md).
 
-> **Status.** `frontend/` currently contains only `.env.example`. The app has not been scaffolded and none
-> of the Phase 5/6 source files exist yet. Steps marked **[not yet implemented]** are the target workflow.
+> **Current state.** `frontend/` is a Vite + React + TypeScript starter app. The registration UI and
+> Supabase integration are not implemented. The Supabase client package is already in
+> `package.json`; the source files listed below describe the planned application, not files currently
+> present in the repository.
 
 ## Prerequisites
 
@@ -16,42 +18,20 @@ Related: [`supabase-setup.md`](./supabase-setup.md) (do this first), [`backend-s
 
 ---
 
-## Step 1 — Scaffold the app **[not yet implemented — T0.4]**
+## Step 1 — Install dependencies
 
-From the **repo root**:
-
-```bash
-cd frontend
-npm create vite@latest . -- --template react-ts
-```
-
-`--template react-ts` matters: the project uses TypeScript, so the response shapes in
-[`../architecture.md`](../architecture.md) §6.1 can be typed.
-
-> Vite will warn that the directory is not empty because `.env.example` already exists there. Choose
-> **"Ignore files and continue"** so the template is added **without deleting `.env.example`**. Choosing
-> "Remove existing files" would delete your committed template.
-
-Then:
+The Vite project is already scaffolded. From the repository root:
 
 ```bash
-npm install
+npm --prefix frontend install
 ```
 
----
 
-## Step 2 — Install the runtime dependencies **[partially done — T0.4]**
+## Step 2 — Runtime dependencies
 
-`@supabase/supabase-js` is the only library the PRD requires (PRD §2):
-
-```bash
-npm install @supabase/supabase-js
-```
-
-`fetch` is used for the API calls, so no HTTP client library is needed — architecture.md §5 specifies a
-small typed wrapper in `src/lib/api.ts` rather than adding Axios.
-
-Confirm the expected scripts exist in `package.json` (T0.4): `dev`, `build`, `preview`, `lint`.
+`@supabase/supabase-js` is already listed in `frontend/package.json`. The application can use the
+browser's `fetch` API for backend requests; no separate HTTP client is required. The available package
+scripts are `dev`, `build`, `preview`, and `lint`.
 
 ---
 
@@ -70,7 +50,7 @@ Fill in the three variables:
 | `VITE_SUPABASE_ANON_KEY` | the **anon / publishable** key | Step 2 value 2 |
 | `VITE_API_BASE_URL` | `http://localhost:8000` | the FastAPI origin |
 
-### The one rule that matters
+### Environment variable exposure
 
 **Every `VITE_*` variable is inlined into the shipped JavaScript bundle.** Vite substitutes these values at
 build time, so they are readable by anyone who loads the app. Supabase's own JWT documentation calls out
@@ -87,7 +67,7 @@ Verify the secret is not tracked:
 git status --porcelain --untracked-files=all | grep -E '\.env$' || echo "OK: .env not tracked"
 ```
 
-> Only `.env` is read by Vite — `.env.example` is inert and exists purely as documentation. Changing
+> Only `.env` is read by Vite — `.env.example` is a template. Changing
 > `.env.example` has no effect at runtime.
 
 ---
@@ -105,10 +85,10 @@ If port 5173 is taken, Vite picks the next free port — and then CORS fails, be
 matches `CORS_ORIGINS`. Either free the port or update `CORS_ORIGINS` in `backend/.env` and restart the
 API.
 
-### Step 4a — Create the source modules **[not yet implemented — T5.1–T5.4, T6.x]**
+### Step 4a — Implement the application modules [not yet implemented — T5.1–T5.4, T6.x]
 
-The app is scaffolded but empty of app code. The files below are what Phases 5–6 add; the component tree
-is in [`../architecture.md`](../architecture.md) §5.
+The current `App.tsx` is the Vite demo. The files below are planned work for Phases 5–6; the target
+component tree is in [`../architecture.md`](../architecture.md) §5.
 
 | File | Purpose | Task |
 | :--- | :--- | :--- |
@@ -147,16 +127,16 @@ In DevTools → Network → any request to `http://localhost:8000`:
 
 ---
 
-## Step 6 — Run the frontend tests
+## Step 6 — Check the frontend
 
 ```bash
 cd frontend
 npm run lint
-npm test          # once a test runner is configured (T5.6)
+npm run build
 ```
 
-The auth tests mock the Supabase client, so they need **no network and no real project** (T5.6). If a test
-starts hitting `supabase.co`, the mock is not being applied.
+There is no test script or test runner configured yet. Add the auth tests described in task T5.6 when a
+test framework is selected.
 
 ---
 

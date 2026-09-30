@@ -1,10 +1,10 @@
 # Courses Manager
 
-A full-stack course registration application built to practice modern web development with React, FastAPI, SQLAlchemy, PostgreSQL, and Supabase Auth.
+Courses Manager is a course-registration app in development. The repository currently contains a Vite + React starter frontend and a Python backend package scaffold. The registration UI, API, database schema, and authentication flow are planned but not implemented yet.
 
 ## Overview
 
-The application focuses on the student course registration flow:
+The planned first release focuses on student registration:
 
 * Browse available classes without signing in
 * Sign in with Supabase Auth
@@ -13,9 +13,9 @@ The application focuses on the student course registration flow:
 * Drop a registered class
 * Enforce class capacity and prevent duplicate registrations
 
-Teacher/admin course management and role-based access control are currently **out of scope**.
+Teacher and admin tools, role-based access control, and course authoring are out of scope for that release.
 
-## Architecture
+## Planned Architecture
 
 ```text
 React + Supabase Client
@@ -37,9 +37,9 @@ React + Supabase Client
        PostgreSQL (Supabase)
 ```
 
-See [`architecture.md`](./architecture.md) for the detailed architecture, database design, authentication flow, and technical decisions.
+The diagram describes the target design, not a running end-to-end application. See [`architecture.md`](./architecture.md) for the proposed data model, API contract, and technical decisions.
 
-## Tech Stack
+## Planned Stack
 
 | Layer                 | Technology                |
 | --------------------- | ------------------------- |
@@ -56,7 +56,7 @@ See [`architecture.md`](./architecture.md) for the detailed architecture, databa
 | Testing               | pytest + httpx            |
 | Linting               | Ruff                      |
 
-## Project Structure
+## Repository Layout
 
 ```text
 courses-manager/
@@ -68,7 +68,9 @@ courses-manager/
 │   └── pyproject.toml
 │
 ├── frontend/
-│   └── .env.example
+│   ├── src/                 # Vite starter app
+│   ├── .env.example
+│   └── package.json
 │
 ├── docs/
 │   ├── backend-setup.md
@@ -82,77 +84,33 @@ courses-manager/
 └── README.md
 ```
 
-## Getting Started
+## Current State
+
+The frontend is the default Vite counter/demo app. Its dependencies are installed from `frontend/package-lock.json`, and `npm run build` currently succeeds. The backend package still contains only its initializer; there is no FastAPI application, migration setup, or seed script yet. The setup guides describe what exists today and identify the remaining implementation work.
+
+## Run the Frontend Scaffold
 
 ### Prerequisites
 
-* Python 3.14
-* [uv](https://docs.astral.sh/uv/)
 * Node.js 18+
 * npm
-* A Supabase project
 
-### 1. Clone the repository
+Clone the repository, then start the frontend:
 
 ```bash
 git clone https://github.com/phongleo1107/courses-manager.git
 cd courses-manager
 ```
 
-### 2. Configure Supabase
-
-Create a Supabase project and configure PostgreSQL and authentication. Google OAuth is optional.
-
-Create the local environment files:
-
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-```
-
-Fill in the required values.
-
-See [`docs/supabase-setup.md`](./docs/supabase-setup.md) for the complete setup process.
-
-### 3. Set up the backend
-
-```bash
-cd backend
-
-uv sync
-uv run alembic upgrade head
-uv run python scripts/seed.py
-```
-
-Start FastAPI:
-
-```bash
-uv run uvicorn backend.main:app --reload --port 8000
-```
-
-API documentation:
-
-* http://localhost:8000/docs
-* http://localhost:8000/health
-
-> Some backend commands depend on features that are still being implemented. See [`docs/todos.md`](./docs/todos.md).
-
-### 4. Set up the frontend
-
 ```bash
 cd frontend
-
 npm install
 npm run dev
 ```
 
-The frontend runs on:
+Vite prints the local URL when the server starts. Supabase configuration is not needed by the current demo. The future integration setup is documented in [`docs/supabase-setup.md`](./docs/supabase-setup.md), [`docs/backend-setup.md`](./docs/backend-setup.md), and [`docs/frontend-setup.md`](./docs/frontend-setup.md).
 
-```text
-http://localhost:5173
-```
-
-See [`docs/frontend-setup.md`](./docs/frontend-setup.md) for detailed frontend setup instructions.
+The backend cannot be started yet. Its target setup and outstanding implementation tasks are listed in [`docs/backend-setup.md`](./docs/backend-setup.md) and [`docs/todos.md`](./docs/todos.md).
 
 ## Environment Variables
 
