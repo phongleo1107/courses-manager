@@ -90,7 +90,7 @@ Phases 2–4. Phases 2–4 depend on one another in order.
 **Files:** `architecture.md`
 **Depends on:** T0.3
 **Acceptance criteria:**
-- [ ] ADR-6 in `architecture.md` matches what was actually done in T0.3
+- [x] ADR-6 in `architecture.md` matches what was actually done in T0.3
 - [x] There is no root `requirements.txt`; backend dependencies are managed in `backend/pyproject.toml`
 - [x] No setup guide instructs contributors to install from a root `requirements.txt`
 
@@ -588,15 +588,15 @@ Every bullet in PRD §7 maps to the tasks that prove it. Nothing in the PRD is o
 
 Supporting requirements and where they are verified:
 
-| Requirement | Source | Proven by |
-| :--- | :--- | :--- |
-| `GET /classes` returns course info with each class | PRD §4 | T4.1, T6.3 |
-| `POST /registrations` payload is `{"class_id": 1}` only | PRD §4 | T4.4, T8.2 |
-| Capacity check `registered < capacity` before insert | PRD §6 Step 3 | T4.3, T7.5 |
-| `registered` incremented on register | PRD §6 Step 3 | T4.3, T7.3, T7.8 |
-| Transaction committed before returning `201 Created` | PRD §6 Step 3 | T4.3, T4.4, T7.6 |
-| Table relationships and cardinality | architecture.md §3.1–3.2 | T1.5, T2.3, T2.4, T2.5 |
-| `auth.users` boundary respected (no ORM model) | architecture.md §3.5 | T2.5 |
+| Requirement                                             | Source                   | Proven by              |
+| :--------------------------------------------------------| :-------------------------| :-----------------------|
+| `GET /classes` returns course info with each class      | PRD §4                   | T4.1, T6.3             |
+| `POST /registrations` payload is `{"class_id": 1}` only | PRD §4                   | T4.4, T8.2             |
+| Capacity check `registered < capacity` before insert    | PRD §6 Step 3            | T4.3, T7.5             |
+| `registered` incremented on register                    | PRD §6 Step 3            | T4.3, T7.3, T7.8       |
+| Transaction committed before returning `201 Created`    | PRD §6 Step 3            | T4.3, T4.4, T7.6       |
+| Table relationships and cardinality                     | architecture.md §3.1–3.2 | T1.5, T2.3, T2.4, T2.5 |
+| `auth.users` boundary respected (no ORM model)          | architecture.md §3.5     | T2.5                   |
 
 ---
 

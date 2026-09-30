@@ -9,9 +9,9 @@
 The stack is `React (Supabase Client) → FastAPI → SQLAlchemy → PostgreSQL (Supabase)`. There are two
 independent hops and it is important not to conflate them:
 
-| Hop | Direction | Purpose |
-| :--- | :--- | :--- |
-| **Auth hop** | React ⇄ Supabase Auth | Establishes identity and returns a signed JWT. FastAPI is *not* involved. |
+| Hop          | Direction                    | Purpose                                                                             |
+| :-------------| :-----------------------------| :------------------------------------------------------------------------------------|
+| **Auth hop** | React ⇄ Supabase Auth        | Establishes identity and returns a signed JWT. FastAPI is *not* involved.           |
 | **Data hop** | React → FastAPI → PostgreSQL | FastAPI authorises the request using the JWT, then reads/writes through SQLAlchemy. |
 
 ```mermaid
@@ -101,14 +101,14 @@ sequenceDiagram
 
 ### 2.2 What is verified
 
-| Claim | Verified? | Why |
-| :--- | :--- | :--- |
-| signature | **Yes** | Proves the token was signed by this Supabase project. |
-| `exp` | **Yes** | Rejects expired access tokens. |
-| `iss` | **Yes** | Must equal `https://<project-ref>.supabase.co/auth/v1`, otherwise a token from a *different* project would be accepted. |
-| `aud` | **Yes** | Expected value is `authenticated`. A `service_role` token must not be usable for user-facing routes. |
-| `sub` | Extracted | The `auth.users.id` UUID. This becomes `user_id` for every registration operation. |
-| `role` | Not used | Supabase's Postgres role, meaningful for RLS. RLS is disabled here (ADR-2), so FastAPI enforces authorisation instead. |
+| Claim     | Verified? | Why                                                                                                                     |
+| :----------| :----------| :------------------------------------------------------------------------------------------------------------------------|
+| signature | **Yes**   | Proves the token was signed by this Supabase project.                                                                   |
+| `exp`     | **Yes**   | Rejects expired access tokens.                                                                                          |
+| `iss`     | **Yes**   | Must equal `https://<project-ref>.supabase.co/auth/v1`, otherwise a token from a *different* project would be accepted. |
+| `aud`     | **Yes**   | Expected value is `authenticated`. A `service_role` token must not be usable for user-facing routes.                    |
+| `sub`     | Extracted | The `auth.users.id` UUID. This becomes `user_id` for every registration operation.                                      |
+| `role`    | Not used  | Supabase's Postgres role, meaningful for RLS. RLS is disabled here (ADR-2), so FastAPI enforces authorisation instead.  |
 
 ### 2.3 Failure behaviour
 
