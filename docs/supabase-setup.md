@@ -199,11 +199,11 @@ committing.
 
 ---
 
-## Step 6 — Apply the database schema [pending backend implementation]
+## Step 6 — Apply the database schema [pending]
 
-The three application tables (`courses`, `classes`, `registrations`) are created by Alembic migrations
-that live in the backend, not by clicking in the dashboard. Once `backend/.env` is filled in, follow
-[`backend-setup.md`](./backend-setup.md) to run:
+The Alembic environment is configured, but the application models and initial schema migration have not
+been added. After task T1.5 is complete and `backend/.env` contains a real database URL, follow
+[`backend-setup.md`](./backend-setup.md) to apply the migration:
 
 ```bash
 cd backend
@@ -239,7 +239,7 @@ Tick these off before moving to the backend or frontend guides:
 - [ ] At least one Email user exists and can sign in
 - [ ] Google OAuth enabled *and* the redirect allowlist contains `http://localhost:5173/**` (or you have
       consciously skipped Google)
-- [ ] `cd backend && uv run alembic upgrade head` succeeds
+- [ ] After the initial schema migration is added, `cd backend && uv run alembic upgrade head` succeeds
 - [ ] The three tables are visible in the dashboard's Table Editor
 
 ---

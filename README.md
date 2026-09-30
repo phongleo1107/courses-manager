@@ -1,197 +1,50 @@
 # Courses Manager
 
-Courses Manager is a course-registration app in development. The repository currently contains a Vite + React starter frontend and a Python backend package scaffold. The registration UI, API, database schema, and authentication flow are planned but not implemented yet.
+A small course-registration app for learning how a React frontend, a FastAPI API, and a database work together.
 
-## Overview
+## Project Status
 
-The planned first release focuses on student registration:
+The frontend is the Vite starter. The backend currently provides a health endpoint, local settings, a SQLAlchemy session, and Alembic configuration. The course catalog, database models and migrations, authentication, and registration features are the next steps.
 
-* Browse available classes without signing in
-* Sign in with Supabase Auth
-* Register for a class
-* View registered classes
-* Drop a registered class
-* Enforce class capacity and prevent duplicate registrations
+The intended MVP lets anyone browse classes and lets a signed-in user register for, view, and drop classes. See the [PRD](PRD.md) for the full requirements.
 
-Teacher and admin tools, role-based access control, and course authoring are out of scope for that release.
+## Run Locally
 
-## Planned Architecture
+Install [uv](https://docs.astral.sh/uv/) and Python 3.14. Install Node.js and npm for the frontend.
 
-```text
-React + Supabase Client
-        │
-        ├── Supabase Auth
-        │       └── JWT
-        │
-        ▼
-     FastAPI
-        │
-        ├── JWT verification
-        ├── API routes
-        └── Service layer
-                │
-                ▼
-          SQLAlchemy
-                │
-                ▼
-       PostgreSQL (Supabase)
-```
-
-The diagram describes the target design, not a running end-to-end application. See [`architecture.md`](./architecture.md) for the proposed data model, API contract, and technical decisions.
-
-## Planned Stack
-
-| Layer                 | Technology                |
-| --------------------- | ------------------------- |
-| Frontend              | React + TypeScript + Vite |
-| Authentication        | Supabase Auth             |
-| Backend               | Python + FastAPI          |
-| Validation / Settings | Pydantic                  |
-| ORM                   | SQLAlchemy 2.0            |
-| Database              | PostgreSQL via Supabase   |
-| Database Driver       | psycopg                   |
-| JWT                   | PyJWT + JWKS              |
-| Migrations            | Alembic                   |
-| Python tooling        | uv                        |
-| Testing               | pytest + httpx            |
-| Linting               | Ruff                      |
-
-## Repository Layout
-
-```text
-courses-manager/
-├── backend/
-│   ├── src/
-│   │   └── backend/
-│   ├── .env.example
-│   ├── .python-version
-│   └── pyproject.toml
-│
-├── frontend/
-│   ├── src/                 # Vite starter app
-│   ├── .env.example
-│   └── package.json
-│
-├── docs/
-│   ├── backend-setup.md
-│   ├── frontend-setup.md
-│   ├── supabase-setup.md
-│   └── todos.md
-│
-├── architecture.md
-├── PRD.md
-├── LICENSE
-└── README.md
-```
-
-## Current State
-
-The frontend is the default Vite counter/demo app. Its dependencies are installed from `frontend/package-lock.json`, and `npm run build` currently succeeds. The backend package still contains only its initializer; there is no FastAPI application, migration setup, or seed script yet. The setup guides describe what exists today and identify the remaining implementation work.
-
-## Run the Frontend Scaffold
-
-### Prerequisites
-
-* Node.js 18+
-* npm
-
-Clone the repository, then start the frontend:
+Start the backend from the repository root:
 
 ```bash
-git clone https://github.com/phongleo1107/courses-manager.git
-cd courses-manager
+uv sync --directory backend
+uv run --directory backend uvicorn backend.main:app --reload --port 8000
 ```
+
+The backend uses local SQLite by default and does not need Supabase credentials for the health check. Open <http://localhost:8000/health>; it should return `{"status":"ok"}`.
+
+In a second terminal, start the frontend:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+npm --prefix frontend install
+npm --prefix frontend run dev
 ```
 
-Vite prints the local URL when the server starts. Supabase configuration is not needed by the current demo. The future integration setup is documented in [`docs/supabase-setup.md`](./docs/supabase-setup.md), [`docs/backend-setup.md`](./docs/backend-setup.md), and [`docs/frontend-setup.md`](./docs/frontend-setup.md).
+The frontend is still the Vite demo; it does not call the backend yet.
 
-The backend cannot be started yet. Its target setup and outstanding implementation tasks are listed in [`docs/backend-setup.md`](./docs/backend-setup.md) and [`docs/todos.md`](./docs/todos.md).
-
-## Environment Variables
-
-### Backend
-
-Defined in [`backend/.env.example`](./backend/.env.example):
-
-| Variable                | Purpose                                 |
-| ----------------------- | --------------------------------------- |
-| `DATABASE_URL`          | Supabase PostgreSQL connection          |
-| `SUPABASE_URL`          | Supabase project URL                    |
-| `SUPABASE_JWKS_URL`     | Public JWT signing keys                 |
-| `SUPABASE_JWT_AUDIENCE` | Expected JWT audience                   |
-| `SUPABASE_JWT_SECRET`   | Legacy HS256 secret, only when required |
-| `CORS_ORIGINS`          | Allowed frontend origins                |
-
-### Frontend
-
-Defined in [`frontend/.env.example`](./frontend/.env.example):
-
-| Variable                 | Purpose                    |
-| ------------------------ | -------------------------- |
-| `VITE_SUPABASE_URL`      | Supabase project URL       |
-| `VITE_SUPABASE_ANON_KEY` | Public Supabase client key |
-| `VITE_API_BASE_URL`      | FastAPI base URL           |
-
-**Never expose** database credentials, JWT secrets, or Supabase service-role/secret keys through `VITE_*` variables.
-
-## API
-
-The planned API is:
-
-| Method   | Endpoint                    | Auth     | Description                      |
-| -------- | --------------------------- | -------- | -------------------------------- |
-| `GET`    | `/classes`                  | Public   | List available classes           |
-| `GET`    | `/registrations/me`         | Required | Get current user's registrations |
-| `POST`   | `/registrations`            | Required | Register for a class             |
-| `DELETE` | `/registrations/{class_id}` | Required | Drop a class                     |
-
-Authenticated requests use:
-
-```http
-Authorization: Bearer <supabase-access-token>
-```
-
-FastAPI verifies the JWT before accessing protected registration endpoints.
-
-## Development
-
-### Backend
+Run backend checks with:
 
 ```bash
-cd backend
-
-uv sync
-uv run pytest
-uv run ruff check .
+uv run --directory backend pytest
+uv run --directory backend ruff check .
 ```
 
-### Frontend
+## Learning Path
 
-```bash
-cd frontend
+Follow [docs/todos.md](docs/todos.md) one step at a time. The [architecture guide](architecture.md) explains how the pieces fit together. The [later topics](docs/later-topics.md) page keeps security, concurrency, and production hardening details for when they become useful.
 
-npm install
-npm run dev
-npm run build
-npm run lint
-```
+## Supabase Setup
 
-## Documentation
+The app is intended to use Supabase Auth and PostgreSQL. The local environment templates are [backend/.env.example](backend/.env.example) and [frontend/.env.example](frontend/.env.example). Copy them to `.env` only when you begin the Supabase steps in [docs/supabase-setup.md](docs/supabase-setup.md). Keep real credentials out of source control, and never expose database credentials or the service-role key to the frontend.
 
-| Document                                             | Description                                 |
-| ---------------------------------------------------- | ------------------------------------------- |
-| [`PRD.md`](./PRD.md)                                 | Product requirements and scope              |
-| [`architecture.md`](./architecture.md)               | System architecture and technical decisions |
-| [`docs/todos.md`](./docs/todos.md)                   | Implementation plan and acceptance criteria |
-| [`docs/supabase-setup.md`](./docs/supabase-setup.md) | Supabase and authentication setup           |
-| [`docs/backend-setup.md`](./docs/backend-setup.md)   | Backend setup and development workflow      |
-| [`docs/frontend-setup.md`](./docs/frontend-setup.md) | Frontend setup and development workflow     |
+## Out of Scope
 
-## License
-
-This project is licensed under the [MIT License](./LICENSE).
+Teacher/admin tools, course authoring, user roles, payments, search, and pagination are not part of the MVP.

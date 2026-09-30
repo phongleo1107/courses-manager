@@ -1,153 +1,82 @@
-# Product Requirements — Course Registration
+# Product Requirements
 
-This document defines the intended first release. The repository currently contains a Vite starter and
-a backend package scaffold; the product flows below are not implemented yet.
+This document describes the intended course-registration MVP. The repository currently has a Vite frontend starter and a FastAPI backend foundation; the product features below are still being built.
 
-## 1. Objective
+## Goal
 
-Build a course registration application with this data path:
+A student can browse available classes, sign in, register for a class, see their registrations, and drop a class. The app is a learning project for the full path from a React screen to a database and back.
 
-**React.js (Supabase Client) → FastAPI → SQLAlchemy → PostgreSQL (Supabase)**
+## How the App Works
 
-The application should use Supabase Auth for identity and FastAPI for data access:
-1. User logs in via Supabase Auth on the frontend.
-2. The React app sends the Supabase access token to FastAPI with each protected request.
-3. FastAPI verifies the token and accesses PostgreSQL through SQLAlchemy.
+React sends HTTP requests to FastAPI. FastAPI reads or changes data in PostgreSQL through SQLAlchemy. Supabase Auth signs users in and gives React an access token. React includes that token on protected requests; FastAPI checks it before using the user's identity.
 
 ```text
-React (Supabase Client)
-  │ (Auth / OAuth)
-  ▼
-Supabase Auth  ──[ Returns JWT ]──►  React
-                                       │
-                                       │ HTTP + Authorization Bearer JWT
-                                       ▼
-                                    FastAPI (Decodes & Verifies JWT)
-                                       │
-                                       │ SQLAlchemy ORM
-                                       ▼
-                                    PostgreSQL (Supabase Database)
+React --HTTP/JSON--> FastAPI --SQLAlchemy--> PostgreSQL (Supabase)
+  |
+  +---- sign in / token ----> Supabase Auth
+  +---- token on protected requests ----> FastAPI
 ```
 
----
+## Data
 
-## 2. Tech Stack
+Supabase manages the `auth.users` table. The app owns three tables:
 
-* **Frontend:** React.js, `@supabase/supabase-js`, Fetch API / Axios.
-* **Backend:** Python, FastAPI, Pydantic, SQLAlchemy, PyJWT.
-* **Database & Auth:** Supabase (PostgreSQL + Built-in Auth).
+| Table | Fields and rules | Relationship |
+| --- | --- | --- |
+| `courses` | `id` integer primary key, `name` text, `credits` positive integer | One course can have many classes. |
+| `classes` | `id` integer primary key, `course_id` foreign key, `class_code` unique text, `teacher` text, `capacity` non-negative integer, `registered` integer defaulting to zero and no greater than capacity, `tuition` integer, `schedule` text | Each class belongs to one course. |
+| `registrations` | `id` UUID primary key, `user_id` UUID foreign key to `auth.users.id`, `class_id` foreign key, `created_at` timestamp; `(user_id, class_id)` is unique | Joins one Supabase user to one class. |
 
----
+`registrations.user_id` refers to `auth.users.id`; the backend does not create or manage Supabase users. A registration's user ID comes from the verified access token, never from client-supplied data.
 
-## 3. Scope & Database Schema
+Important behavior:
 
-The app consists of **1 main page** (Course Catalog + My Registered Classes).
+- A user cannot register for the same class twice.
+- A class cannot exceed its capacity.
+- Dropping a class removes only the current user's registration.
+- Class availability is shown as `registered / capacity`.
 
-### Supabase Database Schema
+Database constraints and concurrent requests are covered in [Later Topics](docs/later-topics.md).
 
-```text
-auth.users (Managed automatically by Supabase)
-  │
-  │ 1
-  │
-  │ *
-registrations (Junction Table)
-  │ *
-  │
-  │ 1
-classes
-  │ *
-  │
-  │ 1
-courses
+## API
+
+An API endpoint is a URL that accepts a request and returns a status code and, usually, JSON. These are the MVP endpoints:
+
+| Method and path | Sign-in required? | Result |
+| --- | --- | --- |
+| `GET /classes` | No | `200` with the class list, including course details. An empty database returns `[]`. |
+| `GET /registrations/me` | Yes | `200` with the current user's registrations. |
+| `POST /registrations` | Yes | Accepts `{ "class_id": 1 }`; creates a registration and returns `201`. |
+| `DELETE /registrations/{class_id}` | Yes | Drops the current user's registration and returns `204`. |
+
+Protected requests use:
+
+```http
+Authorization: Bearer <supabase-access-token>
 ```
 
-#### 1. `courses`
-* `id` (serial, PK)
-* `name` (text)
-* `credits` (integer)
+Invalid or missing credentials return `401`. A class that does not exist returns `404`. A full class or duplicate registration returns `409`. Invalid request data returns `422`.
 
-#### 2. `classes`
-* `id` (serial, PK)
-* `course_id` (integer, FK -> `courses.id`)
-* `class_code` (text)
-* `teacher` (text)
-* `capacity` (integer)
-* `registered` (integer, default 0)
-* `tuition` (integer)
-* `schedule` (text)
+## User Experience
 
-#### 3. `registrations`
-* `id` (uuid or serial, PK)
-* `user_id` (uuid, FK -> `auth.users.id`)
-* `class_id` (integer, FK -> `classes.id`)
-* `created_at` (timestamp)
+The first version is a single page with:
 
----
+- A class catalog that is available while signed out.
+- Sign-in and sign-out controls using Supabase Auth.
+- A registration list visible only to the signed-in user.
+- Register and drop actions with clear loading, empty, and error states.
 
-## 4. API Endpoints (FastAPI)
+Email sign-in is sufficient for the first pass. Google sign-in is an optional provider, not a requirement for completing the core flow.
 
-FastAPI verifies the Supabase bearer token on protected routes. The implementation should validate the
-signature, issuer, audience, and expiry using the project's configured signing keys.
+## MVP Completion
 
-| Method | Endpoint | Auth Required? | Description |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/classes` | No | List all available classes (with course info). |
-| `GET` | `/registrations/me` | **Yes** | Fetch classes registered by the logged-in user. |
-| `POST` | `/registrations` | **Yes** | Register current user for a class (Payload: `{"class_id": 1}`). |
-| `DELETE` | `/registrations/{class_id}` | **Yes** | Unregister current user from a class. |
+- A signed-out visitor can browse classes.
+- A user can sign in and out.
+- FastAPI verifies the user's access token on protected routes.
+- A signed-in user can register for and drop a class.
+- Registrations persist in Supabase PostgreSQL and are associated with the correct `auth.users.id`.
+- Duplicate registrations and registrations beyond class capacity are rejected.
 
-### Backend Auth Middleware / Dependency Flow
-1. React includes `Authorization: Bearer <supabase_access_token>` in HTTP headers.
-2. FastAPI dependency (`get_current_user`) extracts and verifies the token using the project's signing key configuration.
-3. FastAPI extracts `user_id` (sub) from the token payload and uses it for database operations.
+## Out of Scope
 
----
-
-## 5. UI Architecture
-
-A single dashboard page rendering components conditionally based on auth state.
-
-```text
-App
-├── Navbar (Login / Logout / User Status via Supabase UI or SDK)
-├── ClassList (Renders available classes & handles "Register" click)
-└── MyRegistrations (Renders user's enrolled classes & handles "Drop" click)
-```
-
----
-
-## 6. Minimal Implementation Flow
-
-### Step 1: User Actions in React
-1. User clicks **"Sign in with Google / Email"** → Auth managed by Supabase JS SDK.
-2. Supabase returns session data and an `access_token`.
-
-### Step 2: Registering for a Class
-1. User clicks **"Register"** next to a class.
-2. React makes a request:
-   ```http
-   POST /registrations
-   Authorization: Bearer <SUPABASE_JWT_TOKEN>
-   Content-Type: application/json
-
-   { "class_id": 4 }
-   ```
-
-### Step 3: FastAPI & Database Processing
-1. FastAPI verifies token and gets `user_id`.
-2. Checks if `class_id` exists and `registered < capacity`.
-3. Inserts row into `registrations` (`user_id`, `class_id`).
-4. Increments `registered` count on `classes` table.
-5. Commits transaction and returns `201 Created`.
-
----
-
-## 7. Definition of Done
-
-* [ ] Supabase Auth configured (Email or OAuth).
-* [ ] React app handles login/logout states cleanly using the Supabase client.
-* [ ] FastAPI backend verifies incoming Supabase JWT tokens.
-* [ ] Unauthenticated users can view available classes.
-* [ ] Authenticated users can register/unregister for classes.
-* [ ] Registrations persist correctly in Supabase PostgreSQL tied to the specific user's `auth.users.id`.
+Teacher/admin tools, course authoring, role-based access, payments, registration history, search, and pagination are not part of this MVP. See [the architecture guide](architecture.md) for how the main pieces fit together and [the learning roadmap](docs/todos.md) for the build order.

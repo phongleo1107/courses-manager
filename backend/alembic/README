@@ -1,0 +1,4 @@
+Database migration scripts are stored in versions/.
+
+Run Alembic commands from the backend/ directory. The database URL is read from backend/.env
+through the application settings; alembic.ini contains only a non-credential placeholder.
