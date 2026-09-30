@@ -67,11 +67,11 @@ parallel with Phases 2–4. Phases 2–4 are strictly sequential.
 **Files:** `backend/pyproject.toml`, `backend/uv.lock` (new)
 **Depends on:** —
 **Acceptance criteria:**
-- [ ] `backend/pyproject.toml` `dependencies` gains: `fastapi`, `uvicorn[standard]`, `sqlalchemy`, `pydantic-settings`, `psycopg[binary]`, `pyjwt[crypto]`, `alembic`; dev group gains `pytest`, `pytest-cov`, `httpx`, `ruff`
-- [ ] `uv sync` completes against Python 3.14 with wheels for `psycopg`, `cryptography` and `pydantic-core` — no source build from a missing wheel
-- [ ] `uv run python -c "import fastapi, sqlalchemy, psycopg, jwt, cryptography, alembic"` exits `0`
-- [ ] If any import fails: stop and resolve the interpreter version here, before any feature code exists. Record the outcome in `architecture.md` §9.2
-- [ ] `uv.lock` is generated and committed
+- [x] `backend/pyproject.toml` `dependencies` gains: `fastapi`, `uvicorn[standard]`, `sqlalchemy`, `pydantic-settings`, `psycopg[binary]`, `pyjwt[crypto]`, `alembic`; dev group gains `pytest`, `pytest-cov`, `httpx`, `ruff`
+- [x] `uv sync` completes against Python 3.14 with wheels for `psycopg`, `cryptography` and `pydantic-core` — no source build from a missing wheel
+- [x] `uv run python -c "import fastapi, sqlalchemy, psycopg, jwt, cryptography, alembic"` exits `0`
+- [x] If any import fails: stop and resolve the interpreter version here, before any feature code exists. Record the outcome in `architecture.md` §9.2
+- [x] `uv.lock` is generated and committed
 
 ### T0.4 — Scaffold the React frontend
 **Files:** `frontend/` (new tree)
