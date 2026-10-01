@@ -37,9 +37,9 @@ uv run --directory backend pytest
 uv run --directory backend ruff check .
 ```
 
-## Learning Path
+## Project Structure
 
-Follow [docs/todos.md](docs/todos.md) one step at a time. The [architecture guide](architecture.md) explains how the pieces fit together. The [later topics](docs/later-topics.md) page keeps security, concurrency, and production hardening details for when they become useful.
+The [architecture guide](architecture.md) explains how the pieces fit together. The [later topics](docs/later-topics.md) page keeps security, concurrency, and production hardening details for when they become useful.
 
 ## Supabase Setup
 
