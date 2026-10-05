@@ -1,9 +1,9 @@
 # Course Registration MVP - Task Checklist
 
 ## Phase 0: Project Setup & Foundations
-- [ ] **Backend:** Initialize FastAPI project structure (e.g., `main.py`, `database.py`, `models.py`, `schemas.py`).
+- [x] **Backend:** Initialize FastAPI project structure (e.g., `main.py`, `database.py`, `models.py`, `schemas.py`).
 - [ ] **Database:** Set up a local PostgreSQL instance (or Supabase DB).
-- [ ] **Backend:** Install dependencies (`fastapi`, `uvicorn`, `sqlalchemy`, `psycopg2-binary` or `asyncpg`).
+- [x] **Backend:** Install dependencies (`fastapi`, `uvicorn`, `sqlalchemy`, `psycopg2-binary` or `asyncpg`).
 - [ ] **Backend:** Set up SQLAlchemy engine and SessionLocal in `database.py`.
 - [ ] **Frontend:** Initialize React app using Vite (`npm create vite@latest client -- --template react`).
 - [ ] **Frontend:** Install basic dependencies (`axios` or `fetch` is built-in, `react-router-dom` if needed later).
