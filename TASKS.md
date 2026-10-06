@@ -2,11 +2,11 @@
 
 ## Phase 0: Project Setup & Foundations
 - [x] **Backend:** Initialize FastAPI project structure (e.g., `main.py`, `database.py`, `models.py`, `schemas.py`).
-- [ ] **Database:** Set up a local PostgreSQL instance (or Supabase DB).
+- [x] **Database:** Set up a local PostgreSQL instance (or Supabase DB).
 - [x] **Backend:** Install dependencies (`fastapi`, `uvicorn`, `sqlalchemy`, `psycopg2-binary` or `asyncpg`).
-- [ ] **Backend:** Set up SQLAlchemy engine and SessionLocal in `database.py`.
-- [ ] **Frontend:** Initialize React app using Vite (`npm create vite@latest client -- --template react`).
-- [ ] **Frontend:** Install basic dependencies (`axios` or `fetch` is built-in, `react-router-dom` if needed later).
+- [x] **Backend:** Set up SQLAlchemy engine and SessionLocal in `database.py`.
+- [x] **Frontend:** Initialize React app using Vite (`npm create vite@latest client -- --template react`).
+- [x] **Frontend:** Install basic dependencies (`axios` or `fetch` is built-in, `react-router-dom` if needed later).
 
 ## Phase 1: The "Read-Only" Slice (Courses)
 *Goal: Get data from Postgres to the React UI using SQLAlchemy.*
