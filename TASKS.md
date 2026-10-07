@@ -11,9 +11,9 @@
 ## Phase 1: The "Read-Only" Slice (Courses)
 *Goal: Get data from Postgres to the React UI using SQLAlchemy.*
 
-- [ ] **Database:** Define `Course` SQLAlchemy model in `models.py` (id, name, credits). 
-- [ ] **Database:** Create tables in Postgres using SQLAlchemy `Base.metadata.create_all()`.
-- [ ] **Database:** Manually insert 3-4 dummy courses (using a Python script or pgAdmin).
+- [x] **Database:** Define `Course` SQLAlchemy model in `models.py` (id, name, credits). 
+- [x] **Database:** Create tables in Postgres using SQLAlchemy `Base.metadata.create_all()`.
+- [x] **Database:** Manually insert 3-4 dummy courses (using a Python script or pgAdmin).
 - [ ] **Backend:** Define Pydantic schema for `Course` in `schemas.py`.
 - [ ] **Backend:** Create `GET /courses` endpoint to fetch all courses.
 - [ ] **Frontend:** Create a simple `CourseList` component to fetch and display courses.
@@ -21,9 +21,9 @@
 ## Phase 2: The "Teacher" Slice (Create Classes)
 *Goal: Implement the foreign key relationship and a POST request.*
 
-- [ ] **Database:** Define `Class` SQLAlchemy model in `models.py` (id, course_id, class_code, teacher, capacity, registered, tuition, schedule).
-- [ ] **Database:** Ensure `course_id` is set up as a ForeignKey linking to `courses.id`.
-- [ ] **Backend:** Define Pydantic schemas for creating and reading a `Class`.
+- [x] **Database:** Define `Class` SQLAlchemy model in `models.py` (id, course_id, class_code, teacher, capacity, registered, tuition, schedule).
+- [x] **Database:** Ensure `course_id` is set up as a ForeignKey linking to `courses.id`.
+- [x] **Backend:** Define Pydantic schemas for creating and reading a `Class`.
 - [ ] **Backend:** Create `POST /classes` endpoint (accepts course_id, teacher, capacity, etc.).
 - [ ] **Backend:** Create `GET /classes` endpoint.
 - [ ] **Frontend:** Create a "Teacher Dashboard" page/view.
@@ -56,6 +56,6 @@
 - [ ] **Frontend:** Conditionally render UI based on user role (hide teacher forms from students, etc.).
 
 ## Technical Notes / Reminders
-- **MVP Simplification:** Storing `registered` as an integer on the Class model (rather than a separate registrations table) is intentional for simplicity. 
-- **Data Types:** Keep `credits` as an Integer in the SQLAlchemy model, even if the ERD says string.
+- **MVP Simplification:** Storing `registered` as an integer on the Class model (rather than a separate registrations table) is intentional for simplicity.
+
 - **Async vs Sync:** Stick to standard synchronous SQLAlchemy (`Session`) to reduce complexity, rather than jumping straight into Async SQLAlchemy.
