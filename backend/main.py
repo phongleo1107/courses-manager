@@ -1,25 +1,27 @@
-from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel
+from fastapi import FastAPI
 from typing import List, Annotated
 import models
 from database import engine, SessionLocal
-from sqlalchemy.orm import Session
-from decimal import Decimal
+from fastapi.middleware.cors import CORSMiddleware
+from routers.courses import router as courses_router
 
 app = FastAPI()
 models.Base.metadata.create_all(bind=engine)
 
-class CourseBase(BaseModel):
-    name: str
-    credits: int
+origins = [
+    'http://localhost:5173'
+]
 
-class ClassBase(BaseModel):
-    course_id: int
-    teacher: str
-    capacity: int
-    registered: int
-    tuition: Decimal
-    schedule: str 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins
+)
+
+app.include_router(courses_router)
+
+@app.get("/")
+def read_root():
+    return {"message": "Backend is running successfully!"}
 
 def get_db():
     db = SessionLocal()

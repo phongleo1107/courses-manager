@@ -14,9 +14,9 @@
 - [x] **Database:** Define `Course` SQLAlchemy model in `models.py` (id, name, credits). 
 - [x] **Database:** Create tables in Postgres using SQLAlchemy `Base.metadata.create_all()`.
 - [x] **Database:** Manually insert 3-4 dummy courses (using a Python script or pgAdmin).
-- [ ] **Backend:** Define Pydantic schema for `Course` in `schemas.py`.
-- [ ] **Backend:** Create `GET /courses` endpoint to fetch all courses.
-- [ ] **Frontend:** Create a simple `CourseList` component to fetch and display courses.
+- [x] **Backend:** Define Pydantic schema for `Course` in `schemas.py`.
+- [x] **Backend:** Create `GET /courses` endpoint to fetch all courses.
+- [x] **Frontend:** Create a simple `CourseList` component to fetch and display courses.
 
 ## Phase 2: The "Teacher" Slice (Create Classes)
 *Goal: Implement the foreign key relationship and a POST request.*
